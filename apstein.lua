@@ -1318,29 +1318,38 @@ AdidasAnim_Button.TextColor3 = Color3.fromRGB(0, 0, 0)
 AdidasAnim_Button.TextScaled = true
 AdidasAnim_Button.TextSize = 14.000
 AdidasAnim_Button.TextWrapped = true
-
--- Function to apply the Adidas Animation IDs
 AdidasAnim_Button.MouseButton1Click:Connect(function()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local animateScript = character:WaitForChild("Animate")
-
-    -- Official Adidas Community Animation Asset IDs
-    -- Note: These are typical IDs for the community pack; ensure you have permission to use them in your experience.
-    animateScript.idle.Animation1.AnimationId = "rbxassetid://126354114956642" -- grayscaled Idle
-    animateScript.walk.WalkAnim.AnimationId = "rbxassetid://18538146480"     -- AltiWyre Walk
-    animateScript.run.RunAnim.AnimationId = "rbxassetid://18538133604"       -- AltiWyre Run
-    animateScript.jump.JumpAnim.AnimationId = "rbxassetid://18538153691"     -- ItsCheeks Jump
-    animateScript.fall.FallAnim.AnimationId = "rbxassetid://18538164337"     -- e6thn Fall
+    print("Button Clicked!") -- Check 1
     
-    -- Refresh animations by reloading the character or stopping current tracks
-    local humanoid = character:FindFirstChildOfClass("Humanoid")
-    for _, track in pairs(humanoid:GetPlayingAnimationTracks()) do
-        track:Stop()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    
+    if not character then 
+        print("Character not found!") 
+        return 
     end
-    print("adidas Community Animations applied!")
-end)
 
+    local animateScript = character:FindFirstChild("Animate")
+    if animateScript then
+        print("Found Animate script, changing IDs...") -- Check 2
+        
+        -- Wrap in pcall to prevent the whole script from breaking if one ID is wrong
+        pcall(function()
+            animateScript.idle.Animation1.AnimationId = "rbxassetid://126354114956642"
+            animateScript.walk.WalkAnim.AnimationId = "rbxassetid://18538146480"
+            animateScript.run.RunAnim.AnimationId = "rbxassetid://18538133604"
+        end)
+        
+        -- Refreshing the animation state
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid then
+            humanoid:ChangeState(Enum.HumanoidStateType.Landed) 
+            print("Animations Updated!")
+        end
+    else
+        print("Could not find the 'Animate' script inside the character.")
+    end
+end)
 
 
 
