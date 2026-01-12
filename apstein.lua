@@ -1319,39 +1319,6 @@ AdidasAnim_Button.TextScaled = true
 AdidasAnim_Button.TextSize = 14.000
 AdidasAnim_Button.TextWrapped = true
 AdidasAnim_Button.MouseButton1Click:Connect(function()
-    print("Button Clicked!") -- Check 1
-    
-    local player = game.Players.LocalPlayer
-    local character = player.Character
-    
-    if not character then 
-        print("Character not found!") 
-        return 
-    end
-
-    local animateScript = character:FindFirstChild("Animate")
-    if animateScript then
-        print("Found Animate script, changing IDs...") -- Check 2
-        
-        -- Wrap in pcall to prevent the whole script from breaking if one ID is wrong
-        pcall(function()
-            animateScript.idle.Animation1.AnimationId = "rbxassetid://126354114956642"
-            animateScript.walk.WalkAnim.AnimationId = "rbxassetid://18538146480"
-            animateScript.run.RunAnim.AnimationId = "rbxassetid://18538133604"
-        end)
-        
-        -- Refreshing the animation state
-        local humanoid = character:FindFirstChildOfClass("Humanoid")
-        if humanoid then
-            humanoid:ChangeState(Enum.HumanoidStateType.Landed) 
-            print("Animations Updated!")
-        end
-    else
-        print("Could not find the 'Animate' script inside the character.")
-    end
-end)
-
-
 
 
 if game.Players.LocalPlayer.Name == "TheMxltyzlol" then
